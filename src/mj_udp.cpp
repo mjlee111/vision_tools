@@ -118,7 +118,7 @@ void UDP::send_cam_img(vector<uchar> img, uint16_t port, QHostAddress &address, 
     array.clear();
 }
 
-void UDP::read_cam_img(cv::Mat img, uint16_t port, QHostAddress &address, QUdpSocket &socket)
+cv::Mat UDP::read_cam_img(cv::Mat img, uint16_t port, QHostAddress &address, QUdpSocket &socket)
 {
     QByteArray cam_buffer;
     cam_buffer.resize(socket.pendingDatagramSize());
@@ -127,4 +127,5 @@ void UDP::read_cam_img(cv::Mat img, uint16_t port, QHostAddress &address, QUdpSo
     std::vector<uchar> down_decoding(cam_buffer.begin(), cam_buffer.end());
     img = imdecode(Mat(down_decoding), cv::IMREAD_COLOR);
     cam_buffer.clear();
+    return img;
 }

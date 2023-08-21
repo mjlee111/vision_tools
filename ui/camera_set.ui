@@ -82,7 +82,7 @@ color: white;</string>
         <x>60</x>
         <y>20</y>
         <width>151</width>
-        <height>21</height>
+        <height>25</height>
        </rect>
       </property>
      </widget>
@@ -92,7 +92,7 @@ color: white;</string>
         <x>80</x>
         <y>50</y>
         <width>131</width>
-        <height>21</height>
+        <height>25</height>
        </rect>
       </property>
      </widget>
@@ -102,7 +102,7 @@ color: white;</string>
         <x>60</x>
         <y>80</y>
         <width>151</width>
-        <height>21</height>
+        <height>25</height>
        </rect>
       </property>
      </widget>
@@ -130,7 +130,7 @@ color: white;</string>
         <x>80</x>
         <y>30</y>
         <width>131</width>
-        <height>21</height>
+        <height>25</height>
        </rect>
       </property>
      </widget>
@@ -166,7 +166,7 @@ color: white;</string>
         <x>60</x>
         <y>60</y>
         <width>151</width>
-        <height>21</height>
+        <height>25</height>
        </rect>
       </property>
      </widget>

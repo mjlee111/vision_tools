@@ -57,7 +57,7 @@ public slots:
 
     void send_cam_img(vector<uchar> img, uint16_t port, QHostAddress &address, QUdpSocket &socket);
 
-    void read_cam_img(cv::Mat img, uint16_t port, QHostAddress &address, QUdpSocket &socket);
+    cv::Mat read_cam_img(cv::Mat img, uint16_t port, QHostAddress &address, QUdpSocket &socket);
 };
 
 #endif

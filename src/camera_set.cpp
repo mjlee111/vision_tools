@@ -8,6 +8,11 @@ camera_set::camera_set(QWidget *parent)
     ui->setupUi(this);
     QIcon icon("://images/setting.png");
     setWindowIcon(icon);
+    ui->pc_ip->setPlaceholderText("192.168.1.1");
+    ui->target_ip->setPlaceholderText("192.168.1.100");
+    ui->port->setPlaceholderText("8888");
+    ui->target_ip_ssh->setPlaceholderText("192.168.1.1");
+    ui->port_ssh->setPlaceholderText("8090");
 
     usb_cam_grep();
 }
@@ -48,7 +53,7 @@ void camera_set::on_set_clicked()
         if (selectedIndex.isValid())
         {
             int selectedRow = selectedIndex.row();
-            _vision->usb_cam_num = selectedRow + 1;
+            _vision->usb_cam_num = selectedRow;
         }
         else
         {
@@ -95,6 +100,9 @@ void camera_set::on_set_clicked()
     }
 
     emit cameraSetClosed();
+    _vision->Start_stream();
+    _vision->setFixedSize(770, 600);
+    _vision->show();
 }
 
 void camera_set::on_cancel_clicked()

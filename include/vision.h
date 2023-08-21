@@ -13,6 +13,7 @@
 #include <QString>
 #include <QUdpSocket>
 #include <QHostAddress>
+#include "../include/mj_udp.h"
 
 namespace Ui
 {
@@ -44,15 +45,16 @@ public:
     QString SSHport;
 
 private Q_SLOTS:
-    void
-    Cam_update_usb();
-    // void Cam_update_udp();
+    void Cam_update_usb();
+    void Cam_update_udp();
     // void Cam_update_ssh();
     void Fps_update();
 
 private:
     Ui::vision *ui;
     cv::VideoCapture cap;
+
+    UDP *udpMJ = nullptr;
 
     QTimer *timer = new QTimer(this);
     QTimer *fps_timer = new QTimer(this);

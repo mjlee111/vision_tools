@@ -11,11 +11,7 @@ int main(int argc, char *argv[])
     vision *visionWindow = new vision;
 
     QObject::connect(&cameraSetWindow, &camera_set::cameraSetClosed, [&]()
-                     {
-        cameraSetWindow.close();
-        visionWindow->Start_stream();
-        visionWindow->setFixedSize(770, 600);
-        visionWindow->show(); });
+                     { cameraSetWindow.close(); });
 
     cameraSetWindow.setFixedSize(220, 205);
     cameraSetWindow.show();
