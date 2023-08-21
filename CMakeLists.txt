@@ -9,8 +9,11 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}")
 
 find_package(Qt5 COMPONENTS Widgets Network REQUIRED)
+find_package(Qwt REQUIRED)
+
 
 set(OpenCV_INCLUDE_DIRS
   /usr/local/include/opencv4
@@ -56,4 +59,4 @@ add_executable(vision_tools
   ${RESOURCE_FILES} 
 )
 
-target_link_libraries(vision_tools PRIVATE Qt5::Widgets Qt5::Network ${OpenCV_LIBS})
+target_link_libraries(vision_tools PRIVATE Qt5::Widgets Qt5::Network Qwt::Qwt ${OpenCV_LIBS})

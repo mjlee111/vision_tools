@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 #include <QApplication>
 #include <QLabel>
 #include <QPixmap>
@@ -14,7 +15,14 @@
 #include <QUdpSocket>
 #include <QHostAddress>
 #include "../include/mj_udp.h"
+#include <QDateTime>
+#include <QVector>
+#include <QPointF>
 
+#include <qwt/qwt_plot.h>
+#include <qwt/qwt_plot_curve.h>
+#include "qwt/qwt_series_data.h"
+#include <QPen>
 namespace Ui
 {
     class vision;
@@ -45,25 +53,39 @@ public:
     QString Target_address_ssh;
     QString SSHport;
     std::string url;
+    double xValue = 0.0;
 
 private Q_SLOTS:
     void Cam_update_usb();
     void Cam_update_udp();
     void Cam_update_ssh();
     void Fps_update();
+    void avg_reset();
 
 private:
     Ui::vision *ui;
     cv::VideoCapture cap;
     cv::VideoCapture cap2;
 
+    cv::Mat img;
+
     UDP *udpMJ = nullptr;
 
     QTimer *timer = new QTimer(this);
     QTimer *timer2 = new QTimer(this);
     QTimer *fps_timer = new QTimer(this);
+    QTimer *avg_rest_timer = new QTimer(this);
 
-    int fps = 0;
+    QwtPlotCurve *fps_curve;
+    QVector<QPointF> fps_curve_data;
+
+    double fps = 0;
+    double fps_min_max[2] = {100000, 0}; // min , max
+    std::vector<double> fpsVector;
+
+    int imageSizeBytes = 0;
+    double bytesPerSecond = 0.0;
+    void cal_size(cv::Mat img);
 };
 
 #endif // VISION_H
