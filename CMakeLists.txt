@@ -4,7 +4,7 @@ project(vision_tools LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(CMAKE_AUTOUIC ON)
+# set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
@@ -26,6 +26,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
+# Set OpenCV directories and libraries
 set(OpenCV_INCLUDE_DIRS
   /usr/local/include/opencv4
   /usr/local/include/opencv4/opencv2
@@ -53,17 +54,17 @@ link_directories(${OpenCV_LIB_DIR})
 
 if(ANDROID)
   add_library(vision_tools SHARED
-    main.cpp
-    vision.cpp
-    vision.h
-    vision.ui
+    src/main.cpp
+    src/vision.cpp
+    include/vision.h
+    ui/vision.ui
   )
 else()
   add_executable(vision_tools
-    main.cpp
-    vision.cpp
-    vision.h
-    vision.ui
+    src/main.cpp
+    src/vision.cpp
+    include/vision.h
+    ui/vision.ui
   )
 endif()
 

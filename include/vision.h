@@ -11,12 +11,10 @@
 #include <QWidget>
 #include <QImage>
 
-QT_BEGIN_NAMESPACE
 namespace Ui
 {
     class vision;
 }
-QT_END_NAMESPACE
 
 class vision : public QMainWindow
 {

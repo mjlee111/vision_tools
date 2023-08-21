@@ -1,5 +1,5 @@
-#include "vision.h"
-#include "./ui_vision.h"
+#include "../include/vision.h"
+#include "ui_vision.h"
 #include <QString>
 
 vision::vision(QWidget *parent)
