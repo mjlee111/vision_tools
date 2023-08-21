@@ -16,7 +16,7 @@ vision::vision(QWidget *parent)
 
     QTimer *timer = new QTimer(this);
     QObject::connect(timer, SIGNAL(timeout()), this, SLOT(Cam_update()));
-    timer->start(100); // 30ms마다 타이머 동작
+    timer->start(0.5); // 30ms마다 타이머 동작
 }
 
 void vision::Cam_update()
@@ -25,9 +25,10 @@ void vision::Cam_update()
     cv::Mat frame;
     if (cap.read(frame))
     {
-        cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
-        QImage qtImage = QImage((const unsigned char *)(frame.data), frame.cols, frame.rows, QImage::Format_RGB888);
-        ui->raw_image->setPixmap(QPixmap::fromImage(qtImage).scaled(ui->raw_image->size(), Qt::KeepAspectRatio));
+        cv::resize(frame, frame, cv::Size(320, 180));
+        QImage raw_image((const unsigned char *)(frame.data), frame.cols,
+                         frame.rows, QImage::Format_RGB888);
+        ui->raw_image->setPixmap(QPixmap::fromImage(raw_image.rgbSwapped()));
     }
 }
 

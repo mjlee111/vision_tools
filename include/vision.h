@@ -29,8 +29,7 @@ public:
     ~vision();
 
     cv::VideoCapture cap;
-    cv::Mat frame;
-    QImage qtImage;
+    cv::Mat img;
 
 public Q_SLOTS:
     void Cam_update();
