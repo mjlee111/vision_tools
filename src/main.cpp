@@ -8,16 +8,16 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     camera_set cameraSetWindow;
+    vision *visionWindow = new vision;
 
     QObject::connect(&cameraSetWindow, &camera_set::cameraSetClosed, [&]()
                      {
-        // Close the camera set window first
         cameraSetWindow.close();
-        
-        // Create and show the vision window
-        vision *visionWindow = new vision;
+        visionWindow->Start_stream();
+        visionWindow->setFixedSize(770, 600);
         visionWindow->show(); });
 
+    cameraSetWindow.setFixedSize(220, 205);
     cameraSetWindow.show();
 
     return a.exec();

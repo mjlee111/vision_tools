@@ -8,27 +8,42 @@ vision::vision(QWidget *parent)
     ui->setupUi(this);
     QIcon icon("://images/camera.png");
     setWindowIcon(icon);
+}
 
-    cap.open(0);
+void vision::Start_stream()
+{
+    timer->start(33);
+    fps_timer->start(1000);
+    if (Cam_init_usb(usb_cam_num))
+    {
+        connect(timer, SIGNAL(timeout()), this, SLOT(Cam_update_usb()));
+    }
+    else
+    {
+        return;
+    }
+    connect(fps_timer, SIGNAL(timeout()), this, SLOT(Fps_update()));
+}
+
+bool vision::Cam_init_usb(int cam_num)
+{
+    cap.open(cam_num);
     cap.set(cv::CAP_PROP_FRAME_WIDTH, 320);
     cap.set(cv::CAP_PROP_FRAME_HEIGHT, 180);
 
     if (!cap.isOpened())
     {
         std::cout << "Cam Not Available" << std::endl;
-        return;
+        return false;
     }
-
-    QTimer *timer = new QTimer(this);
-    QTimer *fps_timer = new QTimer(this);
-
-    timer->start(33);
-    fps_timer->start(1000);
-    connect(timer, SIGNAL(timeout()), this, SLOT(Cam_update()));
-    connect(fps_timer, SIGNAL(timeout()), this, SLOT(Fps_update()));
+    else
+    {
+        std::cout << "Cam Initialized!" << std::endl;
+        return true;
+    }
 }
 
-void vision::Cam_update()
+void vision::Cam_update_usb()
 {
     cv::Mat frame;
     if (cap.read(frame))

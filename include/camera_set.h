@@ -9,6 +9,12 @@
 #include <QWidget>
 #include <QImage>
 #include <QString>
+#include <QApplication>
+#include <QListView>
+#include <QStringListModel>
+#include <opencv2/opencv.hpp>
+#include <QMessageBox>
+#include "../include/vision.h"
 
 namespace Ui
 {
@@ -23,6 +29,10 @@ public:
     camera_set(QWidget *parent = nullptr);
     ~camera_set();
 
+    void usb_cam_grep();
+
+    QStringList cameraList;
+
 private Q_SLOTS:
     void on_set_clicked();
     void on_cancel_clicked();
@@ -32,6 +42,7 @@ signals:
 
 private:
     Ui::camera_set *ui;
+    vision *_vision = new vision;
 };
 
 #endif // camera_set_H
