@@ -6,6 +6,10 @@ vision::vision(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::vision)
 {
     ui->setupUi(this);
+    QIcon icon("://images/camera.png");
+    setWindowIcon(icon);
+
+    std::cout << "SIBAL" << std::endl;
 
     cap.open(0);
     cap.set(cv::CAP_PROP_FRAME_WIDTH, 320);

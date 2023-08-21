@@ -34,19 +34,23 @@ set(OpenCV_LIBS
 
 include_directories(${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
 link_directories(${OpenCV_LIB_DIR})
+
 set(UI_FILES
     ui/vision.ui
+    ui/camera_set.ui
 )
 
 qt5_wrap_ui(UI_HEADERS ${UI_FILES})
+qt5_add_resources(RESOURCE_FILES resources/images.qrc)
 
 add_executable(vision_tools
   src/main.cpp
   src/vision.cpp
+  src/camera_set.cpp
   include/vision.h
-    ${UI_HEADERS}
+  include/camera_set.h
+  ${UI_HEADERS}
+  ${RESOURCE_FILES} 
 )
-
-
 
 target_link_libraries(vision_tools PRIVATE Qt5::Widgets ${OpenCV_LIBS})
