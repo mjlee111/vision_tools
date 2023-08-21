@@ -12,8 +12,6 @@
 #include <QImage>
 
 QT_BEGIN_NAMESPACE
-using namespace cv;
-
 namespace Ui
 {
     class vision;
@@ -27,15 +25,15 @@ class vision : public QMainWindow
 public:
     vision(QWidget *parent = nullptr);
     ~vision();
+    int fps = 0;
 
-    cv::VideoCapture cap;
-    cv::Mat frame;
-    QImage qtImage;
-
-public Q_SLOTS:
+private Q_SLOTS:
     void Cam_update();
+    void Fps_update();
 
 private:
     Ui::vision *ui;
+    cv::VideoCapture cap;
 };
+
 #endif // VISION_H

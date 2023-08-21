@@ -1,5 +1,6 @@
 #include "vision.h"
 #include "./ui_vision.h"
+#include <QString>
 
 vision::vision(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::vision)
@@ -7,6 +8,8 @@ vision::vision(QWidget *parent)
     ui->setupUi(this);
 
     cap.open(0);
+    cap.set(cv::CAP_PROP_FRAME_WIDTH, 320);
+    cap.set(cv::CAP_PROP_FRAME_HEIGHT, 180);
 
     if (!cap.isOpened())
     {
@@ -15,13 +18,16 @@ vision::vision(QWidget *parent)
     }
 
     QTimer *timer = new QTimer(this);
-    QObject::connect(timer, SIGNAL(timeout()), this, SLOT(Cam_update()));
-    timer->start(0.5); // 30ms마다 타이머 동작
+    QTimer *fps_timer = new QTimer(this);
+
+    timer->start(33);
+    fps_timer->start(1000);
+    connect(timer, SIGNAL(timeout()), this, SLOT(Cam_update()));
+    connect(fps_timer, SIGNAL(timeout()), this, SLOT(Fps_update()));
 }
 
 void vision::Cam_update()
 {
-    cap = cv::VideoCapture(0);
     cv::Mat frame;
     if (cap.read(frame))
     {
@@ -29,10 +35,18 @@ void vision::Cam_update()
         QImage raw_image((const unsigned char *)(frame.data), frame.cols,
                          frame.rows, QImage::Format_RGB888);
         ui->raw_image->setPixmap(QPixmap::fromImage(raw_image.rgbSwapped()));
+        fps++;
     }
+}
+
+void vision::Fps_update()
+{
+    ui->fps->setText(QString::number(fps));
+    fps = 0;
 }
 
 vision::~vision()
 {
+    cap.release(); // Release the VideoCapture
     delete ui;
 }
