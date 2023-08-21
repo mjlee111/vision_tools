@@ -40,6 +40,18 @@ void vision::Start_stream()
             return;
         }
         break;
+    case 3:
+        url = "http://" + Target_address_ssh.toStdString() + ":" + SSHport.toStdString() + "/?action=stream";
+        if (Cam_init_ssh())
+        {
+            timer2->start(33);
+            connect(timer2, SIGNAL(timeout()), this, SLOT(Cam_update_ssh()));
+        }
+        else
+        {
+            return;
+        }
+        break;
 
     default:
         break;
@@ -57,24 +69,35 @@ bool vision::Cam_init_usb(int cam_num)
 
     if (!cap.isOpened())
     {
-        std::cout << "Cam Not Available" << std::endl;
         return false;
     }
     else
     {
-        std::cout << "Cam Initialized!" << std::endl;
         return true;
+    }
+}
+
+bool vision::Cam_init_ssh()
+{
+    cap2 = cv::VideoCapture(url);
+    if (cap2.isOpened())
+    {
+        return true;
+    }
+    else
+    {
+        return false;
     }
 }
 
 void vision::Cam_update_usb()
 {
-    cv::Mat frame;
-    if (cap.read(frame))
+    cv::Mat img;
+    if (cap.read(img))
     {
-        cv::resize(frame, frame, cv::Size(320, 180));
-        QImage raw_image((const unsigned char *)(frame.data), frame.cols,
-                         frame.rows, QImage::Format_RGB888);
+        cv::resize(img, img, cv::Size(320, 180));
+        QImage raw_image((const unsigned char *)(img.data), img.cols,
+                         img.rows, QImage::Format_RGB888);
         ui->raw_image->setPixmap(QPixmap::fromImage(raw_image.rgbSwapped()));
         fps++;
     }
@@ -91,6 +114,24 @@ void vision::Cam_update_udp()
     fps++;
 }
 
+void vision::Cam_update_ssh()
+{
+    cv::Mat img;
+    cap2 = cv::VideoCapture(url);
+    if (!cap2.isOpened())
+    {
+        return;
+    }
+    if (cap2.read(img))
+    {
+        cv::resize(img, img, cv::Size(320, 180));
+        QImage raw_image((const unsigned char *)(img.data), img.cols,
+                         img.rows, QImage::Format_RGB888);
+        ui->raw_image->setPixmap(QPixmap::fromImage(raw_image.rgbSwapped()));
+        fps++;
+    }
+}
+
 void vision::Fps_update()
 {
     ui->fps->setText(QString::number(fps));
@@ -100,6 +141,7 @@ void vision::Fps_update()
 vision::~vision()
 {
     delete udpMJ;
-    cap.release(); // Release the VideoCapture
+    cap.release();
+    cap2.release();
     delete ui;
 }

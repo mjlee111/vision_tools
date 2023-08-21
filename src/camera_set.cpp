@@ -73,7 +73,7 @@ void camera_set::on_set_clicked()
             QMessageBox::warning(this, "WARNING", "YOU NEED TO ENTER ALL THE DATA!");
             return;
         }
-        else if (!as.isEmpty() || !bs.isEmpty() || !cs.isEmpty())
+        else if (!as.isEmpty() && !bs.isEmpty() && !cs.isEmpty())
         {
             _vision->PC_address = as;
             _vision->Target_address = bs;
@@ -91,7 +91,7 @@ void camera_set::on_set_clicked()
             QMessageBox::warning(this, "WARNING", "YOU NEED TO ENTER ALL THE DATA!");
             return;
         }
-        else if (!as.isEmpty() || !bs.isEmpty())
+        else if (!as.isEmpty() && !bs.isEmpty())
         {
             _vision->Target_address_ssh = as;
             _vision->SSHport = bs;
