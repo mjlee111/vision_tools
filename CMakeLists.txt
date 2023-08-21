@@ -4,34 +4,17 @@ project(vision_tools LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-# set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# QtCreator supports the following variables for Android, which are identical to qmake Android variables.
-# Check http://doc.qt.io/qt-5/deployment-android.html for more information.
-# They need to be set before the find_package(Qt5 ...) call.
-
-#if(ANDROID)
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
-#    if (ANDROID_ABI STREQUAL "armeabi-v7a")
-#        set(ANDROID_EXTRA_LIBS
-#            ${CMAKE_CURRENT_SOURCE_DIR}/path/to/libcrypto.so
-#            ${CMAKE_CURRENT_SOURCE_DIR}/path/to/libssl.so)
-#    endif()
-#endif()
-
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
-# Set OpenCV directories and libraries
 set(OpenCV_INCLUDE_DIRS
   /usr/local/include/opencv4
   /usr/local/include/opencv4/opencv2
-  #/home/robit/opencv/opencv_contrib/modules/xfeatures2d/include
-  #/home/robit/opencv/opencv_contrib/modules/xfeatures2d/include/opencv2
 )
 
 set(OpenCV_LIB_DIR
@@ -51,21 +34,19 @@ set(OpenCV_LIBS
 
 include_directories(${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
 link_directories(${OpenCV_LIB_DIR})
+set(UI_FILES
+    ui/vision.ui
+)
 
-if(ANDROID)
-  add_library(vision_tools SHARED
-    src/main.cpp
-    src/vision.cpp
-    include/vision.h
-    ui/vision.ui
-  )
-else()
-  add_executable(vision_tools
-    src/main.cpp
-    src/vision.cpp
-    include/vision.h
-    ui/vision.ui
-  )
-endif()
+qt5_wrap_ui(UI_HEADERS ${UI_FILES})
+
+add_executable(vision_tools
+  src/main.cpp
+  src/vision.cpp
+  include/vision.h
+    ${UI_HEADERS}
+)
+
+
 
 target_link_libraries(vision_tools PRIVATE Qt5::Widgets ${OpenCV_LIBS})
