@@ -27,8 +27,8 @@
 #define CV_AA cv::LINE_AA
 #define Mint cv::Scalar(208, 224, 64)
 
-#define RAW_X 320
-#define RAW_Y 180
+#define RAW_X 640
+#define RAW_Y 480
 
 namespace Ui
 {
@@ -92,6 +92,7 @@ private:
 
     cv::Mat img;
     cv::Mat birdeye;
+    cv::Mat hsv_img;
 
     UDP *udpMJ = nullptr;
 
@@ -122,15 +123,16 @@ private:
     int xy[8] = {
         0,
         0,
-        320,
+        640,
         0,
-        320,
-        180,
+        640,
+        480,
         0,
-        180};
+        480};
 
     void birdeye_view(Mat &input_img, Mat &output_img);
-    void edit_img(cv::Mat &input_img, cv::Mat &output_img);
+    void edit_img();
+    vector<Vec4i> cn_vec;
 };
 
 #endif // VISION_H

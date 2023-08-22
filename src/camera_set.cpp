@@ -101,7 +101,7 @@ void camera_set::on_set_clicked()
 
     emit cameraSetClosed();
     _vision->Start_stream();
-    _vision->setFixedSize(770, 600);
+    _vision->setFixedSize(770, 675);
     _vision->show();
 }
 
