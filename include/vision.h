@@ -23,6 +23,13 @@
 #include <qwt/qwt_plot_curve.h>
 #include "qwt/qwt_series_data.h"
 #include <QPen>
+
+#define CV_AA cv::LINE_AA
+#define Mint cv::Scalar(208, 224, 64)
+
+#define RAW_X 320
+#define RAW_Y 180
+
 namespace Ui
 {
     class vision;
@@ -62,12 +69,29 @@ private Q_SLOTS:
     void Fps_update();
     void avg_reset();
 
+    void on_upper_H_valueChanged(int value);
+    void on_upper_S_valueChanged(int value);
+    void on_upper_V_valueChanged(int value);
+    void on_lower_H_valueChanged(int value);
+    void on_lower_S_valueChanged(int value);
+    void on_lower_V_valueChanged(int value);
+
+    void on_point1_x_valueChanged(int value);
+    void on_point1_y_valueChanged(int value);
+    void on_point2_x_valueChanged(int value);
+    void on_point2_y_valueChanged(int value);
+    void on_point3_x_valueChanged(int value);
+    void on_point3_y_valueChanged(int value);
+    void on_point4_x_valueChanged(int value);
+    void on_point4_y_valueChanged(int value);
+
 private:
     Ui::vision *ui;
     cv::VideoCapture cap;
     cv::VideoCapture cap2;
 
     cv::Mat img;
+    cv::Mat birdeye;
 
     UDP *udpMJ = nullptr;
 
@@ -86,6 +110,27 @@ private:
     int imageSizeBytes = 0;
     double bytesPerSecond = 0.0;
     void cal_size(cv::Mat img);
+
+    int hsv[6] = {
+        0,
+        0,
+        0,
+        0,
+        0,
+        0};
+
+    int xy[8] = {
+        0,
+        0,
+        320,
+        0,
+        320,
+        180,
+        0,
+        180};
+
+    void birdeye_view(Mat &input_img, Mat &output_img);
+    void edit_img(cv::Mat &input_img, cv::Mat &output_img);
 };
 
 #endif // VISION_H

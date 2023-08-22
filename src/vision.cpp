@@ -20,6 +20,34 @@ vision::vision(QWidget *parent)
     fps_curve->setPen(pen);
     ui->fps_plot->setAxisScale(QwtPlot::xBottom, 0.0, 10.0);
     ui->fps_plot->setAxisScale(QwtPlot::yLeft, 0.0, 60.0);
+
+    ui->point1_x->setMaximum(RAW_X);
+    ui->point2_x->setMaximum(RAW_X);
+    ui->point3_x->setMaximum(RAW_X);
+    ui->point4_x->setMaximum(RAW_X);
+
+    ui->point1_y->setMaximum(RAW_Y);
+    ui->point2_y->setMaximum(RAW_Y);
+    ui->point3_y->setMaximum(RAW_Y);
+    ui->point4_y->setMaximum(RAW_Y);
+
+    ui->point1_x_val->setText(QString::number(xy[0]));
+    ui->point1_y_val->setText(QString::number(xy[1]));
+    ui->point2_x_val->setText(QString::number(xy[2]));
+    ui->point2_y_val->setText(QString::number(xy[3]));
+    ui->point3_x_val->setText(QString::number(xy[4]));
+    ui->point3_y_val->setText(QString::number(xy[5]));
+    ui->point4_x_val->setText(QString::number(xy[6]));
+    ui->point4_y_val->setText(QString::number(xy[7]));
+
+    ui->point1_x->setValue(xy[0]);
+    ui->point1_y->setValue(xy[1]);
+    ui->point2_x->setValue(xy[2]);
+    ui->point2_y->setValue(xy[3]);
+    ui->point3_x->setValue(xy[4]);
+    ui->point3_y->setValue(xy[5]);
+    ui->point4_x->setValue(xy[6]);
+    ui->point4_y->setValue(xy[7]);
 }
 
 void vision::Start_stream()
@@ -109,10 +137,7 @@ void vision::Cam_update_usb()
     if (cap.read(img))
     {
         cv::resize(img, img, cv::Size(320, 180));
-        QImage raw_image((const unsigned char *)(img.data), img.cols,
-                         img.rows, QImage::Format_RGB888);
-        ui->raw_image->setPixmap(QPixmap::fromImage(raw_image.rgbSwapped()));
-        // cal_size(img);
+        birdeye_view(img, birdeye);
         fps++;
     }
 }
@@ -121,10 +146,7 @@ void vision::Cam_update_udp()
 {
     img = udpMJ->read_cam_img(img, port, Target_ip, *rcv_img);
     cv::resize(img, img, cv::Size(320, 180));
-    QImage raw_image((const unsigned char *)(img.data), img.cols,
-                     img.rows, QImage::Format_RGB888);
-    ui->raw_image->setPixmap(QPixmap::fromImage(raw_image.rgbSwapped()));
-    // cal_size(img);
+    birdeye_view(img, birdeye);
     fps++;
 }
 
@@ -138,10 +160,7 @@ void vision::Cam_update_ssh()
     if (cap2.read(img))
     {
         cv::resize(img, img, cv::Size(320, 180));
-        QImage raw_image((const unsigned char *)(img.data), img.cols,
-                         img.rows, QImage::Format_RGB888);
-        ui->raw_image->setPixmap(QPixmap::fromImage(raw_image.rgbSwapped()));
-        // cal_size(img);
+        birdeye_view(img, birdeye);
         fps++;
     }
 }
@@ -199,6 +218,184 @@ void vision::cal_size(cv::Mat img)
     imageSizeBytes = img.total() * img.elemSize();
     bytesPerSecond = static_cast<double>(imageSizeBytes) * fps;
     ui->data_byte->setText(QString::number(imageSizeBytes));
+}
+
+void vision::birdeye_view(Mat &input_img, Mat &output_img)
+{
+    Point2f inputQuad[4], outputQuad[4];
+    Mat lambda = Mat::zeros(input_img.rows, input_img.cols, input_img.type());
+
+    inputQuad[0] = Point2f(xy[0], xy[1]);
+    inputQuad[1] = Point2f(xy[2], xy[3]);
+    inputQuad[2] = Point2f(xy[4], xy[5]);
+    inputQuad[3] = Point2f(xy[6], xy[7]);
+
+    outputQuad[0] = Point2f(0, 0);
+    outputQuad[1] = Point2f(RAW_X, 0);
+    outputQuad[2] = Point2f(RAW_X, RAW_Y);
+    outputQuad[3] = Point2f(0, RAW_Y);
+
+    putText(input_img, "0", inputQuad[0], 1, 2, Mint, 1, 8);
+    putText(input_img, "1", inputQuad[1], 1, 2, Mint, 1, 8);
+    putText(input_img, "2", inputQuad[2], 1, 2, Mint, 1, 8);
+    putText(input_img, "3", inputQuad[3], 1, 2, Mint, 1, 8);
+
+    lambda = getPerspectiveTransform(inputQuad, outputQuad);
+
+    warpPerspective(input_img.clone(), output_img, lambda,
+                    cv::Size(RAW_X, RAW_Y));
+
+    circle(input_img, inputQuad[0], 3, Mint, -1);
+    circle(input_img, inputQuad[1], 3, Mint, -1);
+    circle(input_img, inputQuad[2], 3, Mint, -1);
+    circle(input_img, inputQuad[3], 3, Mint, -1);
+
+    line(input_img, inputQuad[0], inputQuad[3], Mint, 2, CV_AA);
+    line(input_img, inputQuad[1], inputQuad[2], Mint, 2, CV_AA);
+
+    QImage be_image((const unsigned char *)(output_img.data), output_img.cols,
+                    output_img.rows, QImage::Format_RGB888);
+    QImage raw_image((const unsigned char *)(input_img.data), input_img.cols,
+                     input_img.rows, QImage::Format_RGB888);
+    ui->raw_image->setPixmap(QPixmap::fromImage(raw_image.rgbSwapped()));
+    ui->birdeye_image->setPixmap(QPixmap::fromImage(be_image.rgbSwapped()));
+}
+
+void vision::edit_img(cv::Mat &input_img, cv::Mat &output_img)
+{
+    cv::Mat edited_img;
+}
+
+void vision::on_upper_H_valueChanged(int value)
+{
+    if (value < hsv[3])
+    {
+        ui->upper_H->setValue(hsv[3]);
+        hsv[0] = hsv[3];
+    }
+    else
+    {
+        hsv[0] = value;
+    }
+    ui->label_upper_H->setText(QString::number(hsv[0]));
+}
+
+void vision::on_upper_S_valueChanged(int value)
+{
+    if (value < hsv[4])
+    {
+        ui->upper_S->setValue(hsv[4]);
+        hsv[1] = hsv[4];
+    }
+    else
+    {
+        hsv[1] = value;
+    }
+    ui->label_upper_S->setText(QString::number(hsv[1]));
+}
+
+void vision::on_upper_V_valueChanged(int value)
+{
+    if (value < hsv[5])
+    {
+        ui->upper_V->setValue(hsv[5]);
+        hsv[2] = hsv[5];
+    }
+    else
+    {
+        hsv[2] = value;
+    }
+    ui->label_upper_V->setText(QString::number(hsv[2]));
+}
+
+void vision::on_lower_H_valueChanged(int value)
+{
+    if (value >= hsv[0])
+    {
+        ui->lower_H->setValue(hsv[0]);
+        hsv[3] = hsv[0];
+    }
+    else
+    {
+        hsv[3] = value;
+    }
+    ui->label_lower_H->setText(QString::number(hsv[3]));
+}
+
+void vision::on_lower_S_valueChanged(int value)
+{
+    if (value >= hsv[1])
+    {
+        ui->lower_S->setValue(hsv[1]);
+        hsv[4] = hsv[1];
+    }
+    else
+    {
+        hsv[4] = value;
+    }
+    ui->label_lower_S->setText(QString::number(hsv[4]));
+}
+
+void vision::on_lower_V_valueChanged(int value)
+{
+    if (value >= hsv[2])
+    {
+        ui->lower_V->setValue(hsv[2]);
+        hsv[5] = hsv[2];
+    }
+    else
+    {
+        hsv[5] = value;
+    }
+    ui->label_lower_V->setText(QString::number(hsv[5]));
+}
+
+void vision::on_point1_x_valueChanged(int value)
+{
+    xy[0] = value;
+    ui->point1_x_val->setText(QString::number(xy[0]));
+}
+
+void vision::on_point1_y_valueChanged(int value)
+{
+    xy[1] = value;
+    ui->point1_y_val->setText(QString::number(xy[1]));
+}
+
+void vision::on_point2_x_valueChanged(int value)
+{
+    xy[2] = value;
+    ui->point2_x_val->setText(QString::number(xy[2]));
+}
+
+void vision::on_point2_y_valueChanged(int value)
+{
+    xy[3] = value;
+    ui->point2_y_val->setText(QString::number(xy[3]));
+}
+
+void vision::on_point3_x_valueChanged(int value)
+{
+    xy[4] = value;
+    ui->point3_x_val->setText(QString::number(xy[4]));
+}
+
+void vision::on_point3_y_valueChanged(int value)
+{
+    xy[5] = value;
+    ui->point3_y_val->setText(QString::number(xy[5]));
+}
+
+void vision::on_point4_x_valueChanged(int value)
+{
+    xy[6] = value;
+    ui->point4_x_val->setText(QString::number(xy[6]));
+}
+
+void vision::on_point4_y_valueChanged(int value)
+{
+    xy[7] = value;
+    ui->point4_y_val->setText(QString::number(xy[7]));
 }
 
 vision::~vision()
