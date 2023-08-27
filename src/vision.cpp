@@ -133,9 +133,9 @@ bool vision::Cam_init_ssh()
 
 void vision::Cam_update_usb()
 {
-
     if (cap.read(img))
     {
+        // hsv_set(img, hsv_img);
         birdeye_view(img, birdeye);
         fps++;
     }
@@ -220,7 +220,6 @@ void vision::cal_size(cv::Mat img)
 void vision::birdeye_view(Mat &input_img, Mat &output_img)
 {
     Point2f inputQuad[4], outputQuad[4];
-    Mat lambda = Mat::zeros(input_img.rows, input_img.cols, input_img.type());
 
     inputQuad[0] = Point2f(xy[0], xy[1]);
     inputQuad[1] = Point2f(xy[2], xy[3]);
@@ -237,10 +236,8 @@ void vision::birdeye_view(Mat &input_img, Mat &output_img)
     putText(input_img, "2", inputQuad[2], 1, 2, Mint, 1, 8);
     putText(input_img, "3", inputQuad[3], 1, 2, Mint, 1, 8);
 
-    lambda = getPerspectiveTransform(inputQuad, outputQuad);
-
-    warpPerspective(input_img.clone(), output_img, lambda,
-                    cv::Size(RAW_X, RAW_Y));
+    Mat M = getPerspectiveTransform(inputQuad, outputQuad);
+    warpPerspective(input_img, output_img, M, output_img.size(), INTER_LINEAR, BORDER_CONSTANT);
 
     circle(input_img, inputQuad[0], 3, Mint, -1);
     circle(input_img, inputQuad[1], 3, Mint, -1);
@@ -259,20 +256,22 @@ void vision::birdeye_view(Mat &input_img, Mat &output_img)
                      input_img.rows, QImage::Format_RGB888);
     ui->raw_image->setPixmap(QPixmap::fromImage(raw_image.rgbSwapped()));
     ui->birdeye_image->setPixmap(QPixmap::fromImage(be_image.rgbSwapped()));
-    edit_img();
 }
 
-void vision::edit_img()
+void vision::hsv_set(Mat &input_img, Mat &output_img)
 {
+    std::cout << "r" << std::endl;
     Mat mask1 = getStructuringElement(MORPH_RECT, Size(3, 3), Point(1, 1)); // 지정 크기 만큼 모폴로지 연산/1,1은 디폴트 값.
-    hsv_img = birdeye.clone();
-    medianBlur(hsv_img, hsv_img, 9);
-    GaussianBlur(hsv_img, hsv_img, Size(15, 15), 2.0);
-    cvtColor(hsv_img, hsv_img, cv::COLOR_RGB2HSV);
-    inRange(hsv_img, Scalar(hsv[3], hsv[4], hsv[5]),
-            Scalar(hsv[0], hsv[1], hsv[2]), hsv_img);
-    QImage hsv_image((const unsigned char *)(hsv_img.data), hsv_img.cols,
-                     hsv_img.rows, QImage::Format_RGB888);
+    output_img = input_img.clone();
+    GaussianBlur(output_img, output_img, Size(15, 15), 2.0);
+    cvtColor(output_img, output_img, cv::COLOR_BGR2HSV);
+    inRange(output_img, Scalar(hsv[0], hsv[1], hsv[2]),
+            Scalar(hsv[3], hsv[4], hsv[5]), output_img);
+    erode(output_img, output_img, mask1, Point(-1, -1), 2);
+    dilate(output_img, output_img, mask1, Point(-1, -1), 2);
+    cv::resize(output_img, output_img, cv::Size(320, 240));
+    QImage hsv_image((const unsigned char *)(output_img.data), output_img.cols,
+                     output_img.rows, QImage::Format_RGB888);
     ui->hsv_image->setPixmap(QPixmap::fromImage(hsv_image.rgbSwapped()));
 }
 

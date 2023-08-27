@@ -120,6 +120,8 @@ private:
         0,
         0};
 
+    // 0 : Hue Max, 1 : Sat Max, 2 : Val Max
+
     int xy[8] = {
         0,
         0,
@@ -131,8 +133,8 @@ private:
         480};
 
     void birdeye_view(Mat &input_img, Mat &output_img);
-    void edit_img();
     vector<Vec4i> cn_vec;
+    void hsv_set(Mat &input_img, Mat &output_img);
 };
 
 #endif // VISION_H
