@@ -154,6 +154,7 @@ void vision::Cam_update_ssh()
   cap2 = cv::VideoCapture(url);
   if (!cap2.isOpened())
   {
+    fps += 0;
     return;
   }
   if (cap2.read(img))

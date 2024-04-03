@@ -3,18 +3,17 @@
 #include "../include/camera_set.h"
 #include "ui_vision.h"
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-    QApplication a(argc, argv);
+  QApplication a(argc, argv);
 
-    camera_set cameraSetWindow;
-    vision *visionWindow = new vision;
+  camera_set cameraSetWindow;
+  vision* visionWindow = new vision;
 
-    QObject::connect(&cameraSetWindow, &camera_set::cameraSetClosed, [&]()
-                     { cameraSetWindow.close(); });
+  QObject::connect(&cameraSetWindow, &camera_set::cameraSetClosed, [&]() { cameraSetWindow.close(); });
 
-    cameraSetWindow.setFixedSize(220, 205);
-    cameraSetWindow.show();
+  cameraSetWindow.setFixedSize(220, 205);
+  cameraSetWindow.show();
 
-    return a.exec();
+  return a.exec();
 }

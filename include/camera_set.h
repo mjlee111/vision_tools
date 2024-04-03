@@ -18,31 +18,31 @@
 
 namespace Ui
 {
-    class camera_set;
+class camera_set;
 }
 
 class camera_set : public QMainWindow
 {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    camera_set(QWidget *parent = nullptr);
-    ~camera_set();
+  camera_set(QWidget* parent = nullptr);
+  ~camera_set();
 
-    void usb_cam_grep();
+  void usb_cam_grep();
 
-    QStringList cameraList;
+  QStringList cameraList;
 
 private Q_SLOTS:
-    void on_set_clicked();
-    void on_cancel_clicked();
+  void on_set_clicked();
+  void on_cancel_clicked();
 
 signals:
-    void cameraSetClosed();
+  void cameraSetClosed();
 
 private:
-    Ui::camera_set *ui;
-    vision *_vision = new vision;
+  Ui::camera_set* ui;
+  vision* _vision = new vision;
 };
 
-#endif // camera_set_H
+#endif  // camera_set_H
