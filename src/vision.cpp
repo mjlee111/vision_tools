@@ -142,8 +142,10 @@ void vision::Cam_update_usb()
 
 void vision::Cam_update_udp()
 {
-  img = udpMJ->read_cam_img(img, port, Target_ip, *rcv_img);
-  birdeye_view(img, birdeye);
+  imgReturn instance;
+  instance = udpMJ->read_cam_img(img, port, Target_ip, *rcv_img);
+  birdeye_view(instance.img, birdeye);
+  ui->data_byte->setText(QString::number(instance.data_size));
   fps++;
 }
 

@@ -30,13 +30,23 @@
 using namespace cv;
 using namespace std;
 
+typedef struct{
+    cv::Mat img;
+    int data_size;
+}imgReturn;
+
 class UDP : public QMainWindow
 {
     Q_OBJECT
 
+    private:
+
+
 public:
     UDP();
     ~UDP();
+
+
 
     bool connection = false;
 
@@ -57,7 +67,7 @@ public slots:
 
     void send_cam_img(vector<uchar> img, uint16_t port, QHostAddress &address, QUdpSocket &socket);
 
-    cv::Mat read_cam_img(cv::Mat img, uint16_t port, QHostAddress &address, QUdpSocket &socket);
+    imgReturn read_cam_img(cv::Mat img, uint16_t port, QHostAddress &address, QUdpSocket &socket);
 };
 
 #endif
